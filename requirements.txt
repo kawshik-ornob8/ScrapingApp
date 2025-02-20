@@ -1,0 +1,9 @@
+python-dotenv
+flask
+requests
+beautifulsoup4
+pdfkit
+python-docx
+openpyxl
+pandas
+youtube-comment-downloader

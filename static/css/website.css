@@ -1,0 +1,12 @@
+.website-scraper {
+    background: linear-gradient(135deg, #28a74520, #ffffff);
+}
+
+.website-card {
+    border-left: 4px solid #28a745;
+}
+
+.data-tab-content {
+    max-height: 500px;
+    overflow-y: auto;
+}

@@ -1,0 +1,18 @@
+/* O:\Flask\scrape\static\css\youtube.css */
+
+.youtube-scraper {
+    background: linear-gradient(45deg, #ff000020, #ffffff);
+}
+
+.youtube-card {
+    border-left: 4px solid #ff0000;
+}
+
+.youtube-progress {
+    background: #ff000030;
+}
+
+.youtube-results-card {
+    max-height: 600px;
+    overflow-y: auto;
+}

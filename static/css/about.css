@@ -1,0 +1,68 @@
+body {
+    background: linear-gradient(135deg, #e0dcdc, #ffffff);
+    min-height: 100vh;
+}
+
+.about-card {
+    background: #3498db;
+    border: none;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    transition: transform 0.3s ease;
+}
+
+.about-card:hover {
+    transform: translateY(-10px);
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px) rotateX(10deg) rotateY(10deg);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.bg-gradient-info {
+    background: linear-gradient(45deg, #17a2b8, #00d4ff);
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #007bff, #00b4ff);
+}
+
+.bg-gradient-dark {
+    background: linear-gradient(45deg, #343a40, #6c757d);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(45deg, #28a745, #00ff7f);
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(45deg, #ffc107, #ffea00);
+}
+
+.text-light {
+    color: #f8f9fa !important;
+}
+
+.animate-3d {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+h1.display-4 {
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.lead {
+    font-size: 1.25rem;
+    opacity: 0.9;
+}

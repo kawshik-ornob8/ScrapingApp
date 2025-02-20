@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'head.html' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
+</head>
+<body class="bg-dark text-light">
+    {% include 'navbar.html' %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-lg about-card animate__animated animate__fadeInUp">
+                    <div class="card-body p-5">
+                        <h1 class="display-4 text-center mb-4 text-info animate__animated animate__bounceIn">
+                            <i class="fas fa-info-circle me-2"></i>About Web Scraper
+                        </h1>
+                        <p class="lead text-center mb-5 animate__animated animate__fadeIn" style="animation-delay: 0.3s;">
+                            A cutting-edge tool to scrape data from your favorite platforms with style and precision.
+                        </p>
+
+                        <section class="mb-5">
+                            <h3 class="text-info mb-3">What We Do</h3>
+                            <p>
+                                Web Scraper is an advanced, user-friendly application designed to extract valuable data from various online platforms. Whether you're a researcher, marketer, or data enthusiast, this tool empowers you to gather insights from YouTube comments, Facebook posts, Twitter threads, website content, and news articles with just a few clicks. Our goal is to simplify data collection while providing robust export options for analysis.
+                            </p>
+                        </section>
+
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-6">
+                                <div class="feature-card text-center p-4 bg-gradient-info animate-3d" data-tilt>
+                                    <i class="fab fa-youtube fa-3x text-danger mb-3"></i>
+                                    <h4>YouTube</h4>
+                                    <p>Extract comments from YouTube videos with a customizable limit up to 10,000, perfect for sentiment analysis or audience feedback.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-card text-center p-4 bg-gradient-primary animate-3d" data-tilt>
+                                    <i class="fab fa-facebook fa-3x text-primary mb-3"></i>
+                                    <h4>Facebook</h4>
+                                    <p>Scrape posts and comments from public Facebook pages to monitor discussions or track engagement.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-card text-center p-4 bg-gradient-dark animate-3d" data-tilt>
+                                    <i class="fab fa-twitter fa-3x text-info mb-3"></i>
+                                    <h4>Twitter</h4>
+                                    <p>Collect tweets and replies from Twitter threads to analyze trends or conversations.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-card text-center p-4 bg-gradient-success animate-3d" data-tilt>
+                                    <i class="fas fa-globe fa-3x text-success mb-3"></i>
+                                    <h4>Websites</h4>
+                                    <p>Gather text, headlines, or images from any website, with flexible options for custom scraping.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="feature-card text-center p-4 bg-gradient-warning animate-3d" data-tilt>
+                                    <i class="fas fa-newspaper fa-3x text-warning mb-3"></i>
+                                    <h4>News</h4>
+                                    <p>Scrape article titles and content from news sitemaps for up-to-date journalism insights.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <section class="mb-5">
+                            <h3 class="text-info mb-3">How It Works</h3>
+                            <p>
+                                Simply navigate to the desired platform’s page (e.g., YouTube, News), input the URL or sitemap, and click "Start Scraping". Watch the real-time progress bar as data is collected, then export it to Excel or Word. For YouTube, you’ll get a single "Comments" column; for news, you’ll get "Title" and "Content" columns. The interface is intuitive, with 3D animations and a smooth user experience.
+                            </p>
+                        </section>
+
+                        <section class="mb-5">
+                            <h3 class="text-info mb-3">Technical Stack</h3>
+                            <p>
+                                Web Scraper is built using a robust stack of modern technologies:
+                            </p>
+                            <ul class="list-unstyled">
+                                <li><strong>Flask</strong>: A lightweight Python web framework for fast backend development.</li>
+                                <li><strong>BeautifulSoup</strong>: For parsing HTML and XML content efficiently.</li>
+                                <li><strong>Pandas & python-docx</strong>: To generate structured Excel and Word exports.</li>
+                                <li><strong>Bootstrap 5</strong>: For a responsive, modern frontend design.</li>
+                                <li><strong>Vanilla Tilt & Animate.css</strong>: For 3D effects and smooth animations.</li>
+                                <li><strong>Requests</strong>: To handle HTTP requests for scraping.</li>
+                            </ul>
+                        </section>
+
+                        <section class="mb-5">
+                            <h3 class="text-info mb-3">Why Choose Us?</h3>
+                            <p>
+                                Our tool stands out with its sleek design, real-time scraping feedback, and versatile export options. It’s built for speed, reliability, and ease of use, supporting multiple platforms in one cohesive package. Whether you’re analyzing social media engagement or aggregating news, Web Scraper delivers the data you need in a format you love.
+                            </p>
+                        </section>
+
+                        <div class="text-center mt-5 animate__animated animate__fadeIn" style="animation-delay: 0.6s;">
+                            <p class="mb-2">Crafted with <i class="fas fa-heart text-danger"></i> by [Your Name or Team Name]</p>
+                            <p>Powered by Flask, BeautifulSoup, and a passion for data.</p>
+                            <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Get Started Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/about.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    {% include 'scripts.html' %}
+</body>
+</html>

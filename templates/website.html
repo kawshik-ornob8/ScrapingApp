@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'head.html' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/website.css') }}">
+</head>
+<body class="bg-light">
+    {% include 'navbar.html' %}
+    <div class="container py-5">
+        <div class="card shadow-lg mb-4 animate__animated animate__fadeIn">
+            <div class="card-body p-4">
+                <h2 class="mb-4"><i class="fas fa-globe-americas text-success me-2"></i>Website Scraper</h2>
+                <div class="mb-3">
+                    <label for="element-type">Select Element to Scrape</label>
+                    <select id="element-type" class="form-control" onchange="updateExportOptions()">
+                        <option value="text">Text</option>
+                        <option value="headlines">Headlines</option>
+                        <option value="images">Images</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <input type="url" id="website-url" class="form-control form-control-lg" placeholder="Enter Website URL" required>
+                    <button id="start-btn" class="btn btn-success btn-lg" onclick="startWebsiteScraping()">Start Scraping</button>
+                    <button id="stop-btn" class="btn btn-danger btn-lg" onclick="stopScraping()" disabled>Stop Scraping</button>
+                </div>
+            </div>
+        </div>
+        <div class="card shadow-sm animate__animated animate__fadeIn">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4><i class="fas fa-tasks me-2"></i>Scraping Progress</h4>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-download me-2"></i>Export
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" id="export-menu">
+                            <li><a class="dropdown-item" href="#" onclick="exportData('excel')"><i class="fas fa-file-excel text-success me-2"></i>Excel</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="exportData('word')"><i class="fas fa-file-word text-primary me-2"></i>Word</a></li>
+                            <li class="zip-option" style="display: none;"><a class="dropdown-item" href="#" onclick="exportData('zip')"><i class="fas fa-file-archive text-warning me-2"></i>ZIP</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="progress mb-4" style="height: 12px;">
+                    <div id="progress-bar" class="progress-bar bg-success progress-bar-striped animate__animated animate__slideInLeft" style="width: 0%"></div>
+                </div>
+                <div id="results" class="row g-3"></div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/website.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+   
+    {% include 'scripts.html' %}
+</body>
+</html>

@@ -1,0 +1,13 @@
+.twitter-scraper {
+    background: linear-gradient(135deg, #1DA1F220, #ffffff);
+}
+
+.twitter-card {
+    border-left: 4px solid #1DA1F2;
+}
+
+.tweet-card {
+    background: #f5f8fa;
+    border-radius: 15px;
+    margin-bottom: 1rem;
+}

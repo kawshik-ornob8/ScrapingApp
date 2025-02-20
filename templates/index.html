@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'head.html' %}
+    <title>ScrapingApp - Home</title>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    
+    <div class="container py-5">
+        <!-- Hero Banner -->
+        <div class="card text-white bg-gradient mb-5 shadow-lg">
+            <div class="card-body p-5 text-center">
+                <h1 class="display-5 fw-bold mb-3" style="color: #000000;">Web Scraping Made Simple</h1>
+                <p class="lead" style="color: #000000;">Extract valuable data from popular platforms with one click</p>
+                <p class="lead" style="color:rgb(255, 0, 0);">This website educational purpose only.</p>
+                <a href="{{ url_for('about') }}" class="btn btn-light btn-lg mt-3">
+                    <i class="fas fa-rocket me-2"></i>Get Started
+                </a>
+            </div>
+        </div>
+
+        <!-- Platform Cards -->
+        <div class="row g-4">
+            <!-- YouTube Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 shadow-sm hover-scale">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-danger p-3 rounded-circle me-3">
+                                <i class="fab fa-youtube fa-2x text-white"></i>
+                            </div>
+                        <h3 class="mb-0">YouTube</h3>
+                    </div>
+                    <p class="text-muted">Scrape video comments, metadata, and engagement metrics</p>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Real-time comment tracking
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Sentiment analysis
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('youtube') }}" class="btn btn-outline-danger w-100">
+                        <i class="fas fa-play me-2"></i>Start Scraping
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Facebook Card -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm hover-scale">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary p-3 rounded-circle me-3">
+                            <i class="fab fa-facebook fa-2x text-white"></i>
+                        </div>
+                        <h3 class="mb-0">Facebook</h3>
+                    </div>
+                    <p class="text-muted">Extract posts, comments, and public page data</p>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Post engagement metrics
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            User interaction analysis
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('facebook') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-play me-2"></i>Start Scraping
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Twitter Card -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm hover-scale">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-info p-3 rounded-circle me-3">
+                            <i class="fab fa-twitter fa-2x text-white"></i>
+                        </div>
+                        <h3 class="mb-0">Twitter</h3>
+                    </div>
+                    <p class="text-muted">Collect tweets, trends, and user profiles</p>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Hashtag tracking
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Real-time stream API
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('twitter') }}" class="btn btn-outline-info w-100">
+                        <i class="fas fa-play me-2"></i>Start Scraping
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Website Card -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm hover-scale">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-success p-3 rounded-circle me-3">
+                            <i class="fas fa-globe fa-2x text-white"></i>
+                        </div>
+                        <h3 class="mb-0">Website</h3>
+                    </div>
+                    <p class="text-muted">Full website scraping with advanced options</p>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Text/content extraction
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Image & link harvesting
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('website') }}" class="btn btn-outline-success w-100">
+                        <i class="fas fa-play me-2"></i>Start Scraping
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Card -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm hover-scale">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-warning p-3 rounded-circle me-3">
+                            <i class="fas fa-newspaper fa-2x text-white"></i>
+                        </div>
+                        <h3 class="mb-0">News</h3>
+                    </div>
+                    <p class="text-muted">Aggregate articles from multiple sources</p>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Date range filtering
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Source categorization
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('news') }}" class="btn btn-outline-warning w-100">
+                        <i class="fas fa-play me-2"></i>Start Scraping
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Card -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm hover-scale bg-gradient text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-light p-3 rounded-circle me-3">
+                            <i class="fas fa-chart-line fa-2x text-dark"></i>
+                        </div>
+                        <h3 class="mb-0">Analytics</h3>
+                    </div>
+                    <p>Advanced data visualization and insights</p>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-light me-2"></i>
+                            Interactive dashboards
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-light me-2"></i>
+                            Export-ready reports
+                        </li>
+                    </ul>
+                    <a href="#" class="btn btn-light w-100">
+                        <i class="fas fa-chart-bar me-2"></i>View Analytics
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mt-5 g-4">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-6">Why Choose Our Scraper?</h2>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-bolt fa-3x text-primary mb-3"></i>
+                    <h5>Lightning Fast</h5>
+                    <p class="text-muted">Optimized scraping engines for quick data collection</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
+                    <h5>Secure & Private</h5>
+                    <p class="text-muted">Military-grade encryption for your data security</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-cloud-download-alt fa-3x text-info mb-3"></i>
+                    <h5>Multiple Formats</h5>
+                    <p class="text-muted">Export data as CSV, JSON, PDF, and more</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-life-ring fa-3x text-warning mb-3"></i>
+                    <h5>24/7 Support</h5>
+                    <p class="text-muted">Dedicated support team ready to help</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'scripts.html' %}
+</body>
+</html>
