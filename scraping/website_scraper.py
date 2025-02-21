@@ -5,16 +5,6 @@ import shutil
 import zipfile
 
 def scrape_website_content(url, element_type='text'):
-    """
-    Scrape content from a website based on the specified element type.
-    
-    Args:
-        url (str): The URL of the website to scrape.
-        element_type (str): The type of element to scrape ('text', 'headlines', 'images').
-    
-    Returns:
-        list or str: Scraped content or path to zip file (for images).
-    """
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
@@ -54,7 +44,7 @@ def scrape_website_content(url, element_type='text'):
                     for file in files:
                         zipf.write(os.path.join(root, file), file)
             shutil.rmtree(img_dir)
-            return [zip_filename] 
+            return [zip_filename]
         else:
             return []
     except Exception as e:

@@ -1,21 +1,29 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "app.py",
-      "use": "@vercel/python",
-      "config": {
-        "runtime": "python3.11",
-        "installCommand": "pip3 install -r requirements.txt",
-        "buildCommand": null,
-        "command": "gunicorn app:app --timeout 60"
-      }
+    "version": 2,
+    "builds": [{
+            "src": "app.py",
+            "use": "@vercel/python"
+        },
+        {
+            "src": "static/**",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "templates/**",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [{
+            "src": "/static/(.*)",
+            "dest": "/static/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "app.py"
+        }
+    ],
+    "env": {
+        "YOUTUBE_API_KEY": "@youtube_api_key",
+        "SECRET_KEY": "@secret_key"
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "app.py"
-    }
-  ]
 }

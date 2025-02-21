@@ -24,11 +24,9 @@ def fetch_news_urls(sitemap_url):
 def scrape_article(url):
     """Scrape the title and content of a news article."""
     try:
-        # Skip if URL is an image
         if url.endswith(('.jpg', '.png', '.gif')):
             logger.debug(f"Skipping image URL: {url}")
             return None
-        
         response = requests.get(url, headers=HEADERS, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
@@ -39,17 +37,3 @@ def scrape_article(url):
     except Exception as e:
         logger.error(f"Error scraping article {url}: {str(e)}")
         return None
-
-def scrape_news_articles(sitemap_url, callback=None):
-    """Scrape news articles from a sitemap URL."""
-    news_urls = fetch_news_urls(sitemap_url)
-    if not news_urls:
-        logger.warning(f"No URLs found in sitemap: {sitemap_url}")
-        return
-    
-    for news_url in news_urls:
-        article = scrape_article(news_url)
-        if article and callback:
-            callback([article])
-            logger.info(f"Scraped article: {news_url}")
-        time.sleep(1)  # Rate limiting

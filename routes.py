@@ -1,63 +1,13 @@
-from flask import render_template, request, redirect, url_for, flash, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file
 from scraping.youtube_scraper import YouTubeScraper
-from scraping.facebook_scraper import scrape_facebook_posts
-from scraping.twitter_scraper import scrape_twitter_posts
+from scraping.news_scraper import fetch_news_urls, scrape_article
 from scraping.website_scraper import scrape_website_content
-from scraping.news_scraper import scrape_news_articles
 from utils import save_as_excel, save_as_word
 from config import Config
-import threading
 import re
-import time
 import logging
 
 logger = logging.getLogger(__name__)
-
-class ScrapingManager:
-    def __init__(self):
-        self.lock = threading.Lock()
-        self.data = []
-        self.scraping = False
-        self.platform = None
-        self.start_time = None
-        self.limit = None
-        self.element_type = None
-        
-    def start_scraping(self, platform, limit=None, element_type='text'):
-        with self.lock:
-            self.scraping = True
-            self.platform = platform
-            self.start_time = time.time()
-            self.data.clear()
-            self.limit = limit
-            self.element_type = element_type
-            
-    def stop_scraping(self):
-        with self.lock:
-            self.scraping = False
-            
-    def add_data(self, items):
-        with self.lock:
-            self.data.extend(items)
-            logger.info(f"Added {len(items)} items, total now: {len(self.data)}")
-            
-    def get_progress(self):
-        with self.lock:
-            return {
-                'count': len(self.data),
-                'comments': self.data[-10:] if len(self.data) >= 10 else self.data,
-                'scraping': self.scraping,
-                'platform': self.platform,
-                'elapsed': time.time() - self.start_time if self.start_time else 0,
-                'limit': self.limit,
-                'element_type': self.element_type
-            }
-    
-    def get_all_data(self):
-        with self.lock:
-            return self.data
-
-manager = ScrapingManager()
 
 def validate_url(url, platform):
     domain_patterns = {
@@ -99,54 +49,45 @@ def register_routes(app):
     def about():
         return render_template('about.html')
 
-    @app.route('/scrape/youtube', methods=['POST'])
-    def scrape_youtube():
+    @app.route('/scrape/youtube/page', methods=['POST'])
+    def scrape_youtube_page():
         data = request.json
         url = data.get('url')
-        api_key = data.get('api_key', None)
-        limit = data.get('limit', None)
-        if limit is not None:
-            try:
-                limit = int(limit)
-                if limit <= 0:
-                    return jsonify({'error': 'Limit must be positive'}), 400
-            except ValueError:
-                return jsonify({'error': 'Invalid limit value'}), 400
-        if not validate_url(url, 'youtube'):
+        page_token = data.get('page_token', None)
+        limit = data.get('limit', 100)
+        api_key = data.get('api_key', Config.YOUTUBE_API_KEY)
+        if not url:
+            return jsonify({'error': 'Missing URL'}), 400
+        video_id = YouTubeScraper.extract_video_id(url)
+        if not video_id:
             return jsonify({'error': 'Invalid YouTube URL'}), 400
-        if manager.scraping:
-            return jsonify({'error': 'Scraping already in progress'}), 400
-        manager.start_scraping('youtube', limit)
-        scraper = YouTubeScraper(api_key if api_key is not None else Config.YOUTUBE_API_KEY)
-        thread = threading.Thread(target=scraper.scrape_comments, args=(url, manager.add_data, limit))
-        thread.start()
-        return jsonify({'status': 'Scraping started'}), 202
+        scraper = YouTubeScraper(api_key)
+        comments, next_page_token = scraper.fetch_comment_page(video_id, page_token, limit)
+        return jsonify({'comments': comments, 'next_page_token': next_page_token})
 
-    @app.route('/scrape/facebook', methods=['POST'])
-    def scrape_facebook():
+    @app.route('/scrape/news/urls', methods=['POST'])
+    def get_news_urls():
         data = request.json
-        url = data.get('url')
-        if not validate_url(url, 'facebook'):
-            return jsonify({'error': 'Invalid Facebook URL'}), 400
-        if manager.scraping:
-            return jsonify({'error': 'Scraping already in progress'}), 400
-        manager.start_scraping('facebook')
-        thread = threading.Thread(target=scrape_facebook_posts, args=(url, manager.add_data, lambda: not manager.scraping))
-        thread.start()
-        return jsonify({'status': 'Scraping started'}), 202
+        sitemap_url = data.get('sitemap_url')
+        if not sitemap_url:
+            return jsonify({'error': 'Missing sitemap_url'}), 400
+        if not validate_url(sitemap_url, 'news'):
+            return jsonify({'error': 'Invalid News Sitemap URL'}), 400
+        urls = fetch_news_urls(sitemap_url)
+        return jsonify({'urls': urls})
 
-    @app.route('/scrape/twitter', methods=['POST'])
-    def scrape_twitter():
+    @app.route('/scrape/news/batch', methods=['POST'])
+    def scrape_news_batch():
         data = request.json
-        url = data.get('url')
-        if not validate_url(url, 'twitter'):
-            return jsonify({'error': 'Invalid Twitter URL'}), 400
-        if manager.scraping:
-            return jsonify({'error': 'Scraping already in progress'}), 400
-        manager.start_scraping('twitter')
-        thread = threading.Thread(target=scrape_twitter_posts, args=(url, manager.add_data, lambda: not manager.scraping))
-        thread.start()
-        return jsonify({'status': 'Scraping started'}), 202
+        article_urls = data.get('article_urls', [])
+        if not article_urls:
+            return jsonify({'error': 'Missing article_urls'}), 400
+        articles = []
+        for url in article_urls:
+            article = scrape_article(url)
+            if article:
+                articles.append(article)
+        return jsonify({'articles': articles})
 
     @app.route('/scrape/website', methods=['POST'])
     def scrape_website():
@@ -155,60 +96,29 @@ def register_routes(app):
         element_type = data.get('element_type', 'text')
         if not validate_url(url, 'website'):
             return jsonify({'error': 'Invalid Website URL'}), 400
-        if manager.scraping:
-            return jsonify({'error': 'Scraping already in progress'}), 400
-        manager.start_scraping('website', element_type=element_type)
-        thread = threading.Thread(target=lambda: manager.add_data(scrape_website_content(url, element_type)))
-        thread.start()
-        return jsonify({'status': 'Scraping started'}), 202
+        data = scrape_website_content(url, element_type)
+        return jsonify({'data': data})
 
-    @app.route('/download/<filename>')
-    def download_file(filename):
-        return send_file(filename, as_attachment=True)
-
-    @app.route('/scrape/news', methods=['POST'])
-    def scrape_news():
-        data = request.json
-        url = data.get('url')
-        if not validate_url(url, 'news'):
-            return jsonify({'error': 'Invalid News Sitemap URL'}), 400
-        if manager.scraping:
-            return jsonify({'error': 'Scraping already in progress'}), 400
-        manager.start_scraping('news')
-        thread = threading.Thread(target=scrape_news_articles, args=(url, manager.add_data))
-        thread.start()
-        return jsonify({'status': 'Scraping started'}), 202
-
-    @app.route('/stop-scraping', methods=['POST'])
-    def stop_scraping():
-        if manager.scraping:
-            manager.stop_scraping()
-        return jsonify({'status': 'Scraping stopped'}), 200
-
-    @app.route('/get_progress')
-    def get_progress():
-        progress = manager.get_progress()
-        return jsonify({
-            'count': progress['count'],
-            'comments': progress['comments'],
-            'progress': min(progress['count'] / (progress['limit'] or 100) * 100, 100) if progress['count'] else 0,
-            'scraping': progress['scraping'],
-            'platform': progress['platform'],
-            'limit': progress['limit'],
-            'element_type': progress['element_type']
-        })
-
-    @app.route('/export/<format>')
+    @app.route('/export/<format>', methods=['POST'])
     def export_data(format):
-        data = manager.get_all_data()
+        data = request.json.get('data', [])
         if not data:
             return jsonify({'error': 'No data to export'}), 400
         if format == 'excel':
             filename = save_as_excel(data)
         elif format == 'word':
             filename = save_as_word(data)
-        elif format == 'zip' and manager.element_type == 'images':
+        elif format == 'zip' and isinstance(data[0], str) and data[0].endswith('.zip'):
             filename = data[0]
         else:
             return jsonify({'error': 'Invalid format'}), 400
         return send_file(filename, as_attachment=True)
+
+    # Disabled unsupported routes (Facebook, Twitter)
+    @app.route('/scrape/facebook', methods=['POST'])
+    def scrape_facebook():
+        return jsonify({'error': 'Facebook scraping is not supported on Vercel due to Selenium limitations'}), 400
+
+    @app.route('/scrape/twitter', methods=['POST'])
+    def scrape_twitter():
+        return jsonify({'error': 'Twitter scraping is not supported on Vercel due to Selenium limitations'}), 400

@@ -1,76 +1,61 @@
-let websiteScraping = false;
-let pollingInterval;
+let collectedData = [];
+let isScraping = false;
 
-function startWebsiteScraping() {
+async function startWebsiteScraping() {
     const url = document.getElementById('website-url').value;
     const elementType = document.getElementById('element-type').value;
     if (!isValidUrl(url)) {
         Swal.fire('Invalid URL', 'Please enter a valid website URL', 'error');
         return;
     }
-    websiteScraping = true;
+    isScraping = true;
     toggleScrapingControls(true);
-    updateExportOptions(); // Update export options when scraping starts
-    fetch('/scrape/website', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: url, element_type: elementType })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to start scraping');
-            return response.json();
-        })
-        .then(data => {
-            if (data.status === 'Scraping started') {
-                pollingInterval = setInterval(updateProgress, 500); // Reduced to 500ms for real-time feel
-            }
-        })
-        .catch(handleError);
-}
-
-function stopScraping() {
-    fetch('/stop-scraping', { method: 'POST' })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'Scraping stopped') {
-                clearInterval(pollingInterval);
-                toggleScrapingControls(false);
-            }
-        });
+    updateExportOptions();
+    const response = await fetch('/scrape/website', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url, element_type: elementType })
+    });
+    const data = await response.json();
+    if (data.error) {
+        Swal.fire('Error', data.error, 'error');
+        isScraping = false;
+        toggleScrapingControls(false);
+        return;
+    }
+    collectedData = data.data;
+    updateProgress();
+    isScraping = false;
+    toggleScrapingControls(false);
 }
 
 function updateProgress() {
-    fetch('/get_progress')
-        .then(response => response.json())
-        .then(data => {
-            const progressBar = document.getElementById('progress-bar');
-            progressBar.style.width = `${data.progress}%`;
-            const resultsDiv = document.getElementById('results');
-            if (data.element_type === 'images' && data.comments.length > 0) {
-                const zipFile = data.comments[0]; // The zip filename
-                resultsDiv.innerHTML = `
-                    <div class="col-12">
-                        <div class="card mb-2 animate__animated animate__fadeIn">
-                            <div class="card-body">
-                                <a href="/download/${zipFile}" download>Download Images (ZIP)</a>
-                            </div>
-                        </div>
+    document.getElementById('progress-bar').style.width = '100%';
+    const resultsDiv = document.getElementById('results');
+    if (collectedData.length > 0 && collectedData[0].endswith('.zip')) {
+        resultsDiv.innerHTML = `
+            <div class="col-12">
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <a href="#" onclick="exportData('zip')">Download Images (ZIP)</a>
                     </div>
-                `;
-            } else {
-                resultsDiv.innerHTML = data.comments.map(comment => `
-                    <div class="col-12">
-                        <div class="card mb-2 animate__animated animate__fadeIn">
-                            <div class="card-body">${comment}</div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            if (!data.scraping) {
-                clearInterval(pollingInterval);
-                toggleScrapingControls(false);
-            }
-        });
+                </div>
+            </div>
+        `;
+    } else {
+        resultsDiv.innerHTML = collectedData.map(item => `
+            <div class="col-12">
+                <div class="card mb-2">
+                    <div class="card-body">${item}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+function stopScraping() {
+    isScraping = false;
+    toggleScrapingControls(false);
 }
 
 function isValidUrl(url) {
@@ -78,18 +63,29 @@ function isValidUrl(url) {
 }
 
 function exportData(format) {
-    window.location.href = `/export/${format}`;
+    fetch(`/export/${format}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: collectedData })
+    }).then(response => {
+        if (response.ok) {
+            return response.blob();
+        }
+        throw new Error('Export failed');
+    }).then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `scraped_data.${format}`;
+        a.click();
+    }).catch(error => {
+        Swal.fire('Error', error.message, 'error');
+    });
 }
 
 function toggleScrapingControls(scraping) {
     document.getElementById('start-btn').disabled = scraping;
     document.getElementById('stop-btn').disabled = !scraping;
-}
-
-function handleError(error) {
-    Swal.fire('Error', error.message, 'error');
-    websiteScraping = false;
-    toggleScrapingControls(false);
 }
 
 function updateExportOptions() {
@@ -110,5 +106,4 @@ function updateExportOptions() {
     }
 }
 
-// Call this on page load to set initial state
 document.addEventListener('DOMContentLoaded', updateExportOptions);

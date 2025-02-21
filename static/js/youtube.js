@@ -1,69 +1,59 @@
-let youtubeScraping = false;
-let pollingInterval;
+let collectedComments = [];
+let isScraping = false;
 
 function startScraping() {
     const url = document.getElementById('youtube-url').value;
     const apiKey = document.getElementById('api-key').value;
-    let limit = document.getElementById('limit').value || 10000; // Default to 10,000
+    let limit = document.getElementById('limit').value || 10000;
+    limit = Math.min(parseInt(limit), 10000);
     if (!isValidYouTubeUrl(url)) {
         Swal.fire('Invalid URL', 'Please enter a valid YouTube URL', 'error');
         return;
     }
-    if (limit && (isNaN(limit) || limit <= 0)) {
-        Swal.fire('Invalid Limit', 'Please enter a positive number', 'error');
-        return;
-    }
-    limit = Math.min(parseInt(limit), 10000); // Cap at 10,000
-    youtubeScraping = true;
+    isScraping = true;
     toggleScrapingControls(true);
-    fetch('/scrape/youtube', {
+    collectedComments = [];
+    let pageToken = null;
+    async function fetchPage() {
+        if (!isScraping) return;
+        const response = await fetch('/scrape/youtube/page', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: url, api_key: apiKey, limit: limit })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to start scraping');
-            return response.json();
-        })
-        .then(data => {
-            if (data.status === 'Scraping started') {
-                pollingInterval = setInterval(updateProgress, 500); // Reduced to 500ms for real-time feel
-            }
-        })
-        .catch(handleError);
+            body: JSON.stringify({ url: url, page_token: pageToken, limit: limit - collectedComments.length, api_key: apiKey })
+        });
+        const data = await response.json();
+        if (data.error) {
+            Swal.fire('Error', data.error, 'error');
+            isScraping = false;
+            toggleScrapingControls(false);
+            return;
+        }
+        collectedComments = collectedComments.concat(data.comments);
+        updateProgress(collectedComments.length, limit);
+        pageToken = data.next_page_token;
+        if (pageToken && collectedComments.length < limit) {
+            setTimeout(fetchPage, 500);
+        } else {
+            isScraping = false;
+            toggleScrapingControls(false);
+        }
+    }
+    fetchPage();
+}
+
+function updateProgress(count, limit) {
+    const progress = (count / limit) * 100;
+    document.getElementById('progress-bar').style.width = `${progress}%`;
+    document.getElementById('user-limit').innerText = limit;
+    document.getElementById('comments-collected').innerText = count;
+    document.getElementById('results').innerHTML = collectedComments.slice(-10).map(comment => `
+        <div class="col-12"><div class="card mb-2"><div class="card-body">${comment}</div></div></div>
+    `).join('');
 }
 
 function stopScraping() {
-    fetch('/stop-scraping', { method: 'POST' })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'Scraping stopped') {
-                clearInterval(pollingInterval);
-                toggleScrapingControls(false);
-            }
-        });
-}
-
-function updateProgress() {
-    fetch('/get_progress')
-        .then(response => response.json())
-        .then(data => {
-            const progressBar = document.getElementById('progress-bar');
-            progressBar.style.width = `${data.progress}%`;
-            progressBar.textContent = `${Math.round(data.progress)}%`;
-            document.getElementById('user-limit').innerText = data.limit || '10000';
-            document.getElementById('comments-collected').innerText = data.count;
-            document.getElementById('results').innerHTML = data.comments.map(comment => `
-                <div class="col-12"><div class="card mb-2 animate__animated animate__fadeIn"><div class="card-body">${comment}</div></div></div>
-            `).join('');
-            if (!data.scraping) {
-                clearInterval(pollingInterval);
-                toggleScrapingControls(false);
-                if (data.limit !== null && data.count == data.limit) {
-                    exportData('excel');
-                }
-            }
-        });
+    isScraping = false;
+    toggleScrapingControls(false);
 }
 
 function isValidYouTubeUrl(url) {
@@ -71,16 +61,27 @@ function isValidYouTubeUrl(url) {
 }
 
 function exportData(format) {
-    window.location.href = `/export/${format}`;
+    fetch(`/export/${format}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: collectedComments })
+    }).then(response => {
+        if (response.ok) {
+            return response.blob();
+        }
+        throw new Error('Export failed');
+    }).then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `scraped_data.${format}`;
+        a.click();
+    }).catch(error => {
+        Swal.fire('Error', error.message, 'error');
+    });
 }
 
 function toggleScrapingControls(scraping) {
     document.getElementById('start-btn').disabled = scraping;
     document.getElementById('stop-btn').disabled = !scraping;
-}
-
-function handleError(error) {
-    Swal.fire('Error', error.message, 'error');
-    youtubeScraping = false;
-    toggleScrapingControls(false);
 }
