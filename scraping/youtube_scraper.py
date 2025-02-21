@@ -117,6 +117,7 @@ class YouTubeScraper:
                     break
         except requests.exceptions.RequestException as e:
             logger.error(f"API request failed: {str(e)}")
+            raise
         finally:
             self.running = False
             logger.info(f"Scraping completed. Total comments collected: {total_comments}")
