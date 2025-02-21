@@ -2,7 +2,7 @@ import re
 import requests
 import time
 import logging
-from config import Config  # Import Config to use the API key from .env
+from config import Config  
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +117,6 @@ class YouTubeScraper:
                     break
         except requests.exceptions.RequestException as e:
             logger.error(f"API request failed: {str(e)}")
-            raise
         finally:
             self.running = False
             logger.info(f"Scraping completed. Total comments collected: {total_comments}")

@@ -7,4 +7,3 @@ python-docx
 openpyxl
 pandas
 youtube-comment-downloader
-gunicorn

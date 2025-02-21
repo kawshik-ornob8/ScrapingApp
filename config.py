@@ -5,7 +5,7 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'fallback_secret_key')
-    YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')  # Loaded from .env
+    YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY') 
     MAX_COMMENTS = 500
     REQUEST_TIMEOUT = 10
     RATE_LIMIT_DELAY = 0.5

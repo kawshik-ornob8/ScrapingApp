@@ -1,4 +1,4 @@
-# O:\Flask\scrape\scraping\twitter_scraper.py
+
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from time import sleep

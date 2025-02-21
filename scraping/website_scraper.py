@@ -54,7 +54,7 @@ def scrape_website_content(url, element_type='text'):
                     for file in files:
                         zipf.write(os.path.join(root, file), file)
             shutil.rmtree(img_dir)
-            return [zip_filename]  # Return as a list for consistency with ScrapingManager
+            return [zip_filename] 
         else:
             return []
     except Exception as e:
