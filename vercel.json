@@ -23,7 +23,7 @@
         }
     ],
     "env": {
-        "YOUTUBE_API_KEY": "@youtube_api_key",
-        "SECRET_KEY": "@secret_key"
+        "YOUTUBE_API_KEY": "AIzaSyA_RUeiQGfsGeOi5UP7uqRCCUrE7jtU180",
+        "SECRET_KEY": ""
     }
 }
