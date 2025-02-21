@@ -1,29 +1,5 @@
 {
-    "version": 2,
-    "builds": [{
-            "src": "app.py",
-            "use": "@vercel/python"
-        },
-        {
-            "src": "static/**",
-            "use": "@vercel/static"
-        },
-        {
-            "src": "templates/**",
-            "use": "@vercel/static"
-        }
-    ],
-    "routes": [{
-            "src": "/static/(.*)",
-            "dest": "/static/$1"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "app.py"
-        }
-    ],
-    "env": {
-        "YOUTUBE_API_KEY": "AIzaSyA_RUeiQGfsGeOi5UP7uqRCCUrE7jtU180",
-        "SECRET_KEY": ""
-    }
+  "version": 2,
+  "builds": [{ "src": "app.py", "use": "@vercel/python" }],
+  "routes": [{ "src": "/(.*)", "dest": "app.py" }]
 }
